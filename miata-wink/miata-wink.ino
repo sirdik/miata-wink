@@ -1,7 +1,8 @@
 //miata headlight motor functions rev4
 
 
-#define buttonPin D3       // analog input pin to use as a digital input
+#define buttonPin D3
+#define buttonSecondPin D4       // analog input pin to use as a digital input       
 #define leftup D1          // digital output pin for left headlight up
 #define rightup D5          // digital output pin for right headlight up
 #define leftdown D2         // digital output pin for left headlight down
@@ -14,9 +15,15 @@ boolean ledVal = true;    // state of headlight power
 
 void setup() {
 
+  Serial.begin(9600); // open the serial port at 9600 bps:
+
   // Set button input pin
   pinMode(buttonPin, INPUT);
   digitalWrite(buttonPin, HIGH );
+
+  // Set button input pin
+  pinMode(buttonSecondPin, INPUT);
+  digitalWrite(buttonSecondPin, HIGH );
 
   //set output for relay interupting original wire
   pinMode(origwire, OUTPUT);
@@ -45,6 +52,12 @@ void loop() {
    if (b == 2) doubleClickEvent();
    if (b == 3) holdEvent();
    if (b == 4) longHoldEvent();
+
+   int c = checkButtonSecondary();
+   if (c == 1) RightWink();
+   if (c == 2) MexicanWave();
+   if (c == 3) holdEvent();
+   if (c == 4) longHoldEvent();
   
 }
 
@@ -53,6 +66,7 @@ void loop() {
 
 void clickEvent()
 {
+  Serial.print("click event");
    digitalWrite(origwire, LOW); 
    delay(100); 
    
@@ -72,6 +86,31 @@ void clickEvent()
   delay(100); 
   digitalWrite(origwire, HIGH);   
 }
+
+void RightWink()
+{
+  Serial.print("Right Wink");
+   digitalWrite(origwire, LOW); 
+   delay(100); 
+   
+   digitalWrite(rightup,  LOW);
+   digitalWrite(rightdown, HIGH);
+   
+   delay(750); 
+    digitalWrite(rightup, HIGH);
+    digitalWrite(rightdown, LOW);
+    
+   delay(750);
+    digitalWrite(leftup,  HIGH);
+    digitalWrite(rightup,  HIGH);
+    digitalWrite(leftdown, HIGH);
+    digitalWrite(rightdown,HIGH);
+  
+  delay(100); 
+  digitalWrite(origwire, HIGH);   
+}
+
+
 void doubleClickEvent() {
    ledVal = !ledVal;
    
@@ -92,6 +131,43 @@ void doubleClickEvent() {
     delay(100); 
   digitalWrite(origwire, HIGH);
 }
+
+void MexicanWave() {     
+  digitalWrite(origwire, LOW); 
+  delay(100);
+
+
+  digitalWrite(leftup,  LOW );
+  delay(500);
+  digitalWrite(rightup,  LOW);
+  delay(500);
+  
+  digitalWrite(leftup,  HIGH );
+  digitalWrite(leftdown, LOW);
+  delay(500);
+  digitalWrite(rightup,  HIGH);
+  digitalWrite(rightdown, LOW);   
+  delay(750);
+  digitalWrite(leftup,  HIGH);
+  digitalWrite(rightup,  HIGH);
+  digitalWrite(leftdown, HIGH);
+  digitalWrite(rightdown,HIGH);
+
+
+
+  delay(100); 
+  digitalWrite(origwire, HIGH);
+}
+
+
+
+
+
+
+
+
+
+
 void holdEvent() {
    ledVal = !ledVal;
    
@@ -143,16 +219,33 @@ int longHoldTime = 1500;    // ms long hold period: how long to wait for press+h
 
 // Button variables
 boolean buttonVal = HIGH;   // value read from button
+boolean buttonValSec = HIGH;   // value read from button
+
 boolean buttonLast = HIGH;  // buffered value of the button's previous state
+boolean buttonLastSec = HIGH;  // buffered value of the button's previous state
+
 boolean DCwaiting = false;  // whether we're waiting for a double click (down)
 boolean DConUp = false;     // whether to register a double click on next release, or whether to wait and click
 boolean singleOK = true;    // whether it's OK to do a single click
+
+boolean DCwaitingSec = false;  // whether we're waiting for a double click (down)
+boolean DConUpSec = false;     // whether to register a double click on next release, or whether to wait and click
+boolean singleOKSec = true;    // whether it's OK to do a single click
+
+
 long downTime = -1;         // time the button was pressed down
 long upTime = -1;           // time the button was released
+long downTimeSec = -1;         // time the button was pressed down
+long upTimeSec = -1;           // time the button was released
 boolean ignoreUp = false;   // whether to ignore the button release because the click+hold was triggered
 boolean waitForUp = false;        // when held, whether to wait for the up event
+boolean ignoreUpSec = false;   // whether to ignore the button release because the click+hold was triggered
+boolean waitForUpSec = false;        // when held, whether to wait for the up event
 boolean holdEventPast = false;    // whether or not the hold event happened already
 boolean longHoldEventPast = false;// whether or not the long hold event happened already
+boolean holdEventPastSec = false;    // whether or not the hold event happened already
+boolean longholdEventPastSec = false;// whether or not the long hold event happened already
+
 
 int checkButton() {    
    int event = 0;
@@ -217,4 +310,68 @@ int checkButton() {
    }
    buttonLast = buttonVal;
    return event;
+}
+int checkButtonSecondary() {    
+   int eventSec = 0;
+   buttonValSec = digitalRead(buttonSecondPin);
+   // Button pressed down
+   if (buttonValSec == LOW && buttonLastSec == HIGH && (millis() - upTime) > debounce)
+   {
+       downTimeSec = millis();
+       ignoreUpSec = false;
+       waitForUpSec = false;
+       singleOKSec = true;
+       holdEventPastSec = false;
+       longholdEventPastSec = false;
+       if ((millis()-upTime) < DCgap && DConUp == false && DCwaiting == true)  DConUp = true;
+       else  DConUp = false;
+       DCwaiting = false;
+   }
+   // Button released
+   else if (buttonValSec == HIGH && buttonLastSec == LOW && (millis() - downTimeSec) > debounce)
+   {        
+       if (not ignoreUpSec)
+       {
+           upTime = millis();
+           if (DConUp == false) DCwaiting = true;
+           else
+           {
+               eventSec = 2;
+               DConUp = false;
+               DCwaiting = false;
+               singleOKSec = false;
+           }
+       }
+   }
+   // Test for normal click event: DCgap expired
+   if ( buttonValSec == HIGH && (millis()-upTime) >= DCgap && DCwaiting == true && DConUp == false && singleOKSec == true && eventSec != 2)
+   {
+       eventSec = 1;
+       DCwaiting = false;
+   }
+   // Test for hold
+   if (buttonValSec == LOW && (millis() - downTimeSec) >= holdTime) {
+       // Trigger "normal" hold
+       if (not holdEventPastSec)
+       {
+           eventSec = 3;
+           waitForUpSec = true;
+           ignoreUpSec = true;
+           DConUp = false;
+           DCwaiting = false;
+           downTimeSec = millis();
+           holdEventPastSec = true;
+       }
+       // Trigger "long" hold
+       if ((millis() - downTimeSec) >= longHoldTime)
+       {
+           if (not longholdEventPastSec)
+           {
+               eventSec = 4;
+               longholdEventPastSec = true;
+           }
+       }
+   }
+   buttonLastSec = buttonValSec;
+   return eventSec;
 }
