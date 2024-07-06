@@ -6,20 +6,14 @@
 #define rightup D5          // digital output pin for right headlight up
 #define leftdown D2         // digital output pin for left headlight down
 #define rightdown D6         // digital output pin for right headlight down
-#define original D7         // digital output pin for right headlight down
+
 // power variable
-boolean ledVal = true;    // state of headlight power
+boolean ledVal = false;    // state of headlight power
 
 //=================================================
 
 void setup() {
    // Set button input pin
-
-   pinMode(original, OUTPUT);
-   digitalWrite(original, HIGH);
-   digitalWrite(original, LOW);
-
-
    pinMode(buttonPin, INPUT);
    digitalWrite(buttonPin, HIGH );
    
@@ -27,8 +21,7 @@ void setup() {
    // Set LED output pins
    pinMode(leftup, OUTPUT);
    digitalWrite(leftup, ledVal);
-   //digitalWrite(leftup, HIGH);
-
+   
    pinMode(rightup, OUTPUT);
    digitalWrite(rightup, ledVal);
    
@@ -41,13 +34,11 @@ void setup() {
 
 void loop() { 
   // Get button event and act accordingly
-  
    int b = checkButton();
    if (b == 1) clickEvent();
    if (b == 2) doubleClickEvent();
    if (b == 3) holdEvent();
    if (b == 4) longHoldEvent();
-  
 }
 
 //=================================================
@@ -64,10 +55,10 @@ void clickEvent()
     digitalWrite(leftdown, !ledVal);
     
    delay(750);
-    digitalWrite(leftup,  HIGH);
-    digitalWrite(rightup,  HIGH);
-    digitalWrite(leftdown, HIGH);
-    digitalWrite(rightdown,HIGH);
+    digitalWrite(leftup,  LOW);
+    digitalWrite(rightup,  LOW);
+    digitalWrite(leftdown, LOW);
+    digitalWrite(rightdown,LOW);
   
 }
 void doubleClickEvent() {
@@ -79,10 +70,10 @@ void doubleClickEvent() {
    digitalWrite(rightdown, !ledVal);
    
    delay(750);
-    digitalWrite(leftup,  HIGH);
-    digitalWrite(rightup,  HIGH);
-    digitalWrite(leftdown, HIGH);
-    digitalWrite(rightdown,HIGH);
+    digitalWrite(leftup,  LOW);
+    digitalWrite(rightup,  LOW);
+    digitalWrite(leftdown, LOW);
+    digitalWrite(rightdown,LOW);
 }
 void holdEvent() {
    ledVal = !ledVal;
@@ -93,10 +84,10 @@ void holdEvent() {
    digitalWrite(rightdown, !ledVal);
    
    delay(750);
-    digitalWrite(leftup,  HIGH);
-    digitalWrite(rightup,  HIGH);
-    digitalWrite(leftdown, HIGH);
-    digitalWrite(rightdown,HIGH);
+    digitalWrite(leftup,  LOW);
+    digitalWrite(rightup,  LOW);
+    digitalWrite(leftdown, LOW);
+    digitalWrite(rightdown,LOW);
 }
 void longHoldEvent() {
    ledVal = HIGH; 
@@ -107,10 +98,10 @@ void longHoldEvent() {
     digitalWrite(rightdown, ledVal);
     
    delay(750);
-    digitalWrite(leftup,  HIGH);
-    digitalWrite(rightup,  HIGH);
-    digitalWrite(leftdown, HIGH);
-    digitalWrite(rightdown,HIGH);
+    digitalWrite(leftup,  LOW);
+    digitalWrite(rightup,  LOW);
+    digitalWrite(leftdown, LOW);
+    digitalWrite(rightdown,LOW);
     
     ledVal = false;
   
