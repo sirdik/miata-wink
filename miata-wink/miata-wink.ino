@@ -6,23 +6,21 @@
 #define rightup D5          // digital output pin for right headlight up
 #define leftdown D2         // digital output pin for left headlight down
 #define rightdown D6         // digital output pin for right headlight down
-#define original D7         // digital output pin for right headlight down
+#define origwire D7         // digital output pin for right headlight down
 // power variable
 boolean ledVal = true;    // state of headlight power
 
 //=================================================
 
 void setup() {
-   // Set button input pin
 
-   pinMode(original, OUTPUT);
-   digitalWrite(original, HIGH);
-   digitalWrite(original, LOW);
+  // Set button input pin
+  pinMode(buttonPin, INPUT);
+  digitalWrite(buttonPin, HIGH );
 
-
-   pinMode(buttonPin, INPUT);
-   digitalWrite(buttonPin, HIGH );
-   
+  //set output for relay interupting original wire
+  pinMode(origwire, OUTPUT);
+  digitalWrite(origwire, HIGH); 
    
    // Set LED output pins
    pinMode(leftup, OUTPUT);
@@ -55,6 +53,8 @@ void loop() {
 
 void clickEvent()
 {
+   digitalWrite(origwire, LOW); 
+   delay(100); 
    
    digitalWrite(leftup,  !ledVal);
    digitalWrite(leftdown, ledVal);
@@ -69,10 +69,15 @@ void clickEvent()
     digitalWrite(leftdown, HIGH);
     digitalWrite(rightdown,HIGH);
   
+  delay(100); 
+  digitalWrite(origwire, HIGH);   
 }
 void doubleClickEvent() {
    ledVal = !ledVal;
    
+   digitalWrite(origwire, LOW); 
+   delay(100);
+
    digitalWrite(leftup,  ledVal );
    digitalWrite(rightup,  ledVal);
    digitalWrite(leftdown, !ledVal);
@@ -83,10 +88,16 @@ void doubleClickEvent() {
     digitalWrite(rightup,  HIGH);
     digitalWrite(leftdown, HIGH);
     digitalWrite(rightdown,HIGH);
+
+    delay(100); 
+  digitalWrite(origwire, HIGH);
 }
 void holdEvent() {
    ledVal = !ledVal;
    
+   digitalWrite(origwire, LOW); 
+   delay(100);
+
    digitalWrite(leftup,  !ledVal );
    digitalWrite(rightup,  ledVal);
    digitalWrite(leftdown, ledVal);
@@ -97,10 +108,16 @@ void holdEvent() {
     digitalWrite(rightup,  HIGH);
     digitalWrite(leftdown, HIGH);
     digitalWrite(rightdown,HIGH);
+
+  delay(100); 
+  digitalWrite(origwire, HIGH);
 }
 void longHoldEvent() {
    ledVal = HIGH; 
- 
+  
+  digitalWrite(origwire, LOW); 
+  delay(100);
+
     digitalWrite(leftup, !ledVal);
     digitalWrite(rightup,  !ledVal);
     digitalWrite(leftdown, ledVal);
@@ -111,7 +128,9 @@ void longHoldEvent() {
     digitalWrite(rightup,  HIGH);
     digitalWrite(leftdown, HIGH);
     digitalWrite(rightdown,HIGH);
-    
+
+  delay(100); 
+  digitalWrite(origwire, HIGH); 
     ledVal = false;
   
 }
