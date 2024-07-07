@@ -31,9 +31,24 @@ void setup() {
   // link the button 2 functions.
   buttonRight.attachClick(RightWink);
   buttonRight.attachDoubleClick(doubleclick2);
-  buttonRight.attachLongPressStart(longPressStart2);
-  //buttonRight.attachLongPressStop(longPressStop2);
-  //buttonRight.attachDuringLongPress(longPress2);
+  buttonRight.attachLongPressStart(mavackaStart);
+  buttonRight.attachLongPressStop(mavackaEnd);
+  buttonRight.attachDuringLongPress(mavackaHold);
+
+  pinMode(origwire, OUTPUT);
+  digitalWrite(origwire, HIGH);
+  
+  pinMode(leftup, OUTPUT);
+  digitalWrite(leftup, HIGH);
+  
+  pinMode(rightup, OUTPUT);
+  digitalWrite(rightup, HIGH);
+   
+  pinMode(leftdown, OUTPUT);    
+  digitalWrite(leftdown, HIGH);
+   
+  pinMode(rightdown, OUTPUT);    
+  digitalWrite(rightdown, HIGH);
 
 }  // setup
 
@@ -48,18 +63,6 @@ void loop() {
 }  // loop
 
 
-// ----- button 1 callback functions
-
-// This function will be called when the buttonLeft was pressed 1 time (and no 2. button press followed).
-void click1() {
-  Serial.println("Button 1 click.");
-}  // click1
-
-
-// This function will be called when the buttonLeft was pressed 2 times in a short timeframe.
-void doubleclick1() {
-  Serial.println("Button 1 doubleclick.");
-}  // doubleclick1
 
 
 // This function will be called once, when the buttonLeft is pressed for a long time.
@@ -77,28 +80,9 @@ void longPressStop1() {
   Serial.println("Button 1 longPress stop");
 }  // longPressStop1
 
-void click2() {
-  Serial.println("Button 2 click.");
-}  // click2
-
-
 void doubleclick2() {
   Serial.println("Button 2 doubleclick.");
 }  // doubleclick2
-
-
-void longPressStart2() {
-  Serial.println("Button 2 longPress start");
-}  // longPressStart2
-
-
-void longPress2() {
-  Serial.println("Button 2 longPress...");
-}  // longPress2
-
-void longPressStop2() {
-  Serial.println("Button 2 longPress stop");
-}  // longPressStop2
 
 void RightWink()
 {
@@ -147,7 +131,7 @@ void MexicanWave() {
   originalOFF();
 
   digitalWrite(leftdown,  LOW );
-  delay(250);
+  delay(350);
   digitalWrite(rightdown,  LOW);
   delay(500);  
 
@@ -157,12 +141,31 @@ void MexicanWave() {
 
   digitalWrite(rightdown,  HIGH );
   digitalWrite(rightup, LOW);
-  delay(500); 
+  delay(750); 
   
   digitalWrite(leftup,  HIGH);
   digitalWrite(rightup,  HIGH);
   digitalWrite(leftdown, HIGH);
   digitalWrite(rightdown,HIGH);
+
+  originalON();  
+}
+
+void mavackaStart() {     
+  Serial.print("Mavacka START");  
+ 
+  originalOFF(); 
+}
+void mavackaHold() {     
+  Serial.print("Mavacka Hold");  
+  digitalWrite(leftdown,  LOW );  
+  digitalWrite(rightdown,  LOW);  
+  digitalWrite(leftup,  LOW );  
+  digitalWrite(rightup,  LOW);
+}
+
+void mavackaEnd() {     
+  Serial.print("Mavacka End"); 
 
   originalON();  
 }
@@ -176,8 +179,4 @@ void originalON()
 {
   delay(100); 
   digitalWrite(origwire, HIGH);   
-}
-void SerialTest()
-{
-  Serial.print("Serial TEST ONLY");  
 }
