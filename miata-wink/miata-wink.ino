@@ -24,13 +24,13 @@ void setup() {
   // link the button 1 functions.
   buttonLeft.attachClick(LeftWink);
   buttonLeft.attachDoubleClick(MexicanWave);
-  buttonLeft.attachLongPressStart(longPressStart1);
-  //buttonLeft.attachLongPressStop(longPressStop1);
-  //buttonLeft.attachDuringLongPress(longPress1);
+  buttonLeft.attachLongPressStart(mavackaSwitchStart);
+  buttonLeft.attachLongPressStop(mavackaEnd);
+  buttonLeft.attachDuringLongPress(mavackaSwitchHold);
 
   // link the button 2 functions.
   buttonRight.attachClick(RightWink);
-  buttonRight.attachDoubleClick(doubleclick2);
+  buttonRight.attachDoubleClick(Sleepy);
   buttonRight.attachLongPressStart(mavackaStart);
   buttonRight.attachLongPressStop(mavackaEnd);
   buttonRight.attachDuringLongPress(mavackaHold);
@@ -80,10 +80,6 @@ void longPressStop1() {
   Serial.println("Button 1 longPress stop");
 }  // longPressStop1
 
-void doubleclick2() {
-  Serial.println("Button 2 doubleclick.");
-}  // doubleclick2
-
 void RightWink()
 {
   Serial.print("Right Wink");  
@@ -131,7 +127,7 @@ void MexicanWave() {
   originalOFF();
 
   digitalWrite(leftdown,  LOW );
-  delay(350);
+  delay(300);
   digitalWrite(rightdown,  LOW);
   delay(500);  
 
@@ -150,12 +146,50 @@ void MexicanWave() {
 
   originalON();  
 }
+void Sleepy() {     
+  Serial.print("Sleepy");  
+  originalOFF();
 
+  digitalWrite(leftdown, LOW );
+  digitalWrite(rightdown, LOW);
+  delay(300);
+  digitalWrite(leftdown, HIGH);
+  digitalWrite(rightdown, HIGH);
+  
+  delay(1500);  
+  //digitalWrite(leftdown, LOW );
+  //digitalWrite(rightdown, LOW);
+  //delay(450);
+ // digitalWrite(leftdown, HIGH);
+  //digitalWrite(rightdown, HIGH);
+
+  //delay(10);
+
+  digitalWrite(leftup, LOW);
+  digitalWrite(rightup,  LOW);
+  delay(750);  
+  digitalWrite(leftup,  HIGH);
+  digitalWrite(rightup,  HIGH);
+  digitalWrite(leftdown, HIGH);
+  digitalWrite(rightdown,HIGH);
+
+  originalON();  
+}
 void mavackaStart() {     
   Serial.print("Mavacka START");  
  
   originalOFF(); 
 }
+void mavackaSwitchStart() {     
+  Serial.print("Mavacka Switch START");  
+ 
+  originalOFF(); 
+
+  digitalWrite(leftdown,  LOW );  
+  delay(750);
+  digitalWrite(rightdown,  LOW); 
+}
+
 void mavackaHold() {     
   Serial.print("Mavacka Hold");  
   digitalWrite(leftdown,  LOW );  
@@ -164,8 +198,20 @@ void mavackaHold() {
   digitalWrite(rightup,  LOW);
 }
 
+void mavackaSwitchHold() {     
+  Serial.print("Mavacka Switch Hold");
+  digitalWrite(leftdown,  LOW );
+  digitalWrite(rightdown,  LOW);  
+  digitalWrite(leftup,  LOW );  
+  digitalWrite(rightup,  LOW);
+}
+
 void mavackaEnd() {     
   Serial.print("Mavacka End"); 
+  digitalWrite(leftdown,  HIGH);  
+  digitalWrite(rightdown,  HIGH);  
+  digitalWrite(leftup,  HIGH );  
+  digitalWrite(rightup,  HIGH);
 
   originalON();  
 }
